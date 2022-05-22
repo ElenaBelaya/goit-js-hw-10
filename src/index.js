@@ -10,31 +10,40 @@ const refs = {
     listEl: document.querySelector(`.country-list`),
     infoEl: document.querySelector(`.country-info`)
 };
-console.log(refs.listEl);
+//console.log(refs.listEl);
 
-refs.inputEl.addEventListener('input', debounce(fetchCountries, 3000));
+refs.inputEl.addEventListener('input', debounce(onSearch, 300));
 
+let countryName = "";
 
+function onSearch() {
+    let countryNames = refs.inputEl.value;    
+    //const countryName = event.target.value;
+    //console.log(event.target);
+    //const countryName = 'Canada';
+    fetchCountries(countryNames)
+    .then(renderContriesList)
+    .catch(error => {
+        Notify.info('Oops, there is no country with that name');
+        console.log('error:', error);
+    });   
+}
    
-fetchCountries()
-.then(renderContriesList)
-.catch(error => {
-    Notify.info('Oops, there is no country with that name');
-}).finally(() => console.log('hi')); 
-
-let name = "per";
 
 function fetchCountries(name) {
-   
+   console.log(name);
    return fetch('https://restcountries.com/v3.1/name/${name}?fields=name,capital,population,flags,languages')
    .then(response => {
-       return response.json();
-   });   
+       console.log(response);
+       return response.json()
+    });
+   
 };
 
 function renderContriesList(countries) {
     console.log(countries.length);
-    if(countries.length >=2 && countries.length <= 10)   {
+    
+    if(countries.length >=2 && countries.length <= 10) {
     const countryList = countries.map((country) => 
         `
         <li class="country_element">
@@ -69,3 +78,5 @@ function renderContriesList(countries) {
 }
 
 
+
+//
