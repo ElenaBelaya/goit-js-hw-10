@@ -1,48 +1,38 @@
 import './css/styles.css';
+
 var debounce = require('lodash.debounce');
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import { BASE_URL, fetchCountries } from "./fetchCountries";
+
 
 const DEBOUNCE_DELAY = 300;
-//const BASE_URL = 'https://restcountries.com/v3.1';
+
 
 const refs = {
     inputEl: document.querySelector(`#search-box`),
     listEl: document.querySelector(`.country-list`),
     infoEl: document.querySelector(`.country-info`)
 };
-//console.log(refs.listEl);
-
-refs.inputEl.addEventListener('input', debounce(onSearch, 300));
+refs.inputEl.addEventListener('input', debounce(onSearch, DEBOUNCE_DELAY));
 
 let countryName = "";
 
 function onSearch() {
-    let countryNames = refs.inputEl.value;    
-    //const countryName = event.target.value;
-    //console.log(event.target);
-    //const countryName = 'Canada';
+    const countryNames = refs.inputEl.value.trim(); 
+    refs.infoEl.innerHTML = ""; 
+    refs.listEl.innerHTML = "";    
+   
+    if(countryNames) {
     fetchCountries(countryNames)
     .then(renderContriesList)
     .catch(error => {
         Notify.info('Oops, there is no country with that name');
         console.log('error:', error);
-    });   
+    });  
+} 
 }
-   
-
-function fetchCountries(name) {
-   console.log(name);
-   return fetch('https://restcountries.com/v3.1/name/${name}?fields=name,capital,population,flags,languages')
-   .then(response => {
-       console.log(response);
-       return response.json()
-    });
-   
-};
 
 function renderContriesList(countries) {
-    console.log(countries.length);
-    
     if(countries.length >=2 && countries.length <= 10) {
     const countryList = countries.map((country) => 
         `
